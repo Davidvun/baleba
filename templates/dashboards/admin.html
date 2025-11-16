@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<h1 class="text-3xl font-bold mb-8">Admin Dashboard</h1>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-lg font-semibold text-gray-600">Total Users</h3>
+        <p class="text-4xl font-bold text-blue-600">{{ total_users }}</p>
+        <p class="text-sm text-gray-500 mt-2">{{ total_tutors }} tutors, {{ total_students }} students</p>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-lg font-semibold text-gray-600">Total Courses</h3>
+        <p class="text-4xl font-bold text-green-600">{{ total_courses }}</p>
+        <p class="text-sm text-gray-500 mt-2">{{ total_enrollments }} enrollments</p>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-lg font-semibold text-gray-600">Total Revenue</h3>
+        <p class="text-4xl font-bold text-purple-600">${{ total_revenue|floatformat:2 }}</p>
+        <p class="text-sm text-gray-500 mt-2">From course sales</p>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold">Quick Actions</h2>
+        </div>
+        <div class="space-y-3">
+            <a href="{% url 'admin_manage_users' %}" class="block p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition">
+                <h3 class="font-semibold text-blue-900">Manage Users</h3>
+                <p class="text-sm text-blue-700">View, edit, and create users</p>
+            </a>
+            <a href="{% url 'admin_manage_courses' %}" class="block p-4 bg-green-50 hover:bg-green-100 rounded-lg transition">
+                <h3 class="font-semibold text-green-900">Manage Courses</h3>
+                <p class="text-sm text-green-700">View, edit, and create courses</p>
+            </a>
+            <a href="{% url 'admin_create_tutor' %}" class="block p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition">
+                <h3 class="font-semibold text-purple-900">Create Tutor</h3>
+                <p class="text-sm text-purple-700">Add a new tutor to the platform</p>
+            </a>
+        </div>
+    </div>
+    
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-xl font-bold mb-4">Recent Users</h2>
+        <div class="space-y-3">
+            {% for user in recent_users %}
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div>
+                    <p class="font-semibold">{{ user.username }}</p>
+                    <p class="text-sm text-gray-500">{{ user.get_role_display }} - {{ user.email }}</p>
+                </div>
+                <span class="text-xs text-gray-400">{{ user.date_joined|date:"M d" }}</span>
+            </div>
+            {% empty %}
+            <p class="text-gray-500 text-center py-4">No recent users</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <h2 class="text-xl font-bold mb-4">Recent Purchases</h2>
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Student</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Course</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for purchase in recent_purchases %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ purchase.student.username }}</td>
+                    <td class="px-6 py-4">{{ purchase.course.title }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${{ purchase.amount }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ purchase.completed_at|date:"M d, Y" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="px-6 py-4 text-center text-gray-500">No purchases yet</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

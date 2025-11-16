@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}{{ course.title }}{% endblock %}
+{% block content %}
+<h1 class="text-3xl font-bold mb-8">{{ course.title }}</h1>
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+    <div class="lg:col-span-3 space-y-6">
+        {% for unit in units %}
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-bold mb-4">Unit {{ unit.order }}: {{ unit.title }}</h2>
+            <p class="text-gray-600 mb-4">{{ unit.description }}</p>
+            <div class="space-y-3">
+                <h3 class="font-bold">Videos</h3>
+                {% for video in unit.videos.all %}
+                <div class="p-4 bg-gray-50 rounded flex justify-between items-center">
+                    <span>{{ video.title }}</span>
+                    <span class="text-sm text-gray-500">{{ video.duration }} sec</span>
+                </div>
+                {% endfor %}
+                <h3 class="font-bold mt-4">Materials</h3>
+                {% for material in unit.materials.all %}
+                <div class="p-4 bg-gray-50 rounded flex justify-between items-center">
+                    <span>{{ material.title }}</span>
+                    {% if material.is_downloadable %}<a href="{{ material.file.url }}" download class="text-blue-600 hover:underline">Download</a>{% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div>
+        <div class="bg-white rounded-lg shadow-md p-6 sticky top-4">
+            <h3 class="font-bold mb-4">Your Progress</h3>
+            <div class="w-full bg-gray-200 rounded-full h-4 mb-2">
+                <div class="bg-blue-600 h-4 rounded-full" style="width: {{ enrollment.progress }}%"></div>
+            </div>
+            <p class="text-sm text-gray-600">{{ enrollment.progress|floatformat:0 }}% Complete</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

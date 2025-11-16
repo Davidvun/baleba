@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<h1 class="text-3xl font-bold mb-8">Welcome Back, {{ user.first_name|default:user.username }}!</h1>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <!-- Enrolled Courses -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-lg font-semibold text-gray-600">Enrolled Courses</h3>
+        <p class="text-4xl font-bold text-blue-600">{{ enrollments.count }}</p>
+        <a href="{% url 'my_courses' %}" class="text-sm text-blue-500 hover:underline mt-2 inline-block">View all →</a>
+    </div>
+
+    <!-- Available Courses -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-lg font-semibold text-gray-600">Available Courses</h3>
+        <p class="text-4xl font-bold text-green-600">{{ available_courses.count }}+</p>
+        <a href="{% url 'course_catalog' %}" class="text-sm text-green-500 hover:underline mt-2 inline-block">Browse →</a>
+    </div>
+
+    <!-- Learning Progress -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-lg font-semibold text-gray-600">Learning Progress</h3>
+        {% with first_enrollment=enrollments|first %}
+            <p class="text-4xl font-bold text-purple-600">
+                {{ first_enrollment.progress|default:0|floatformat:0 }}%
+            </p>
+        {% endwith %}
+        <p class="text-sm text-gray-500 mt-2">Keep learning!</p>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <!-- My Courses -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold">My Courses</h2>
+            <a href="{% url 'my_courses' %}" class="text-blue-600 hover:text-blue-800 text-sm">View All →</a>
+        </div>
+        <div class="space-y-3">
+            {% for enrollment in enrollments %}
+                <a href="{% url 'course_learn' enrollment.course.id %}" class="block p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition">
+                    <h3 class="font-semibold">{{ enrollment.course.title }}</h3>
+                    <div class="mt-2">
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-blue-600 h-2 rounded-full" style="width: {{ enrollment.progress }}%"></div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">{{ enrollment.progress|floatformat:0 }}% complete</p>
+                    </div>
+                </a>
+            {% empty %}
+                <div class="text-center py-8">
+                    <p class="text-gray-500 mb-4">You haven't enrolled in any courses yet</p>
+                    <a href="{% url 'course_catalog' %}" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Browse Courses</a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Discover New Courses -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-xl font-bold mb-4">Discover New Courses</h2>
+        <div class="space-y-3">
+            {% for course in available_courses %}
+                <a href="{% url 'course_detail' course.slug %}" class="block p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition">
+                    <h3 class="font-semibold">{{ course.title }}</h3>
+                    <div class="flex items-center justify-between mt-2">
+                        <span class="text-sm text-gray-500">By {{ course.tutor.username }}</span>
+                        {% if course.is_free %}
+                            <span class="text-green-600 font-semibold">Free</span>
+                        {% else %}
+                            <span class="text-blue-600 font-semibold">${{ course.price }}</span>
+                        {% endif %}
+                    </div>
+                </a>
+            {% empty %}
+                <p class="text-gray-500 text-center py-4">No courses available</p>
+            {% endfor %}
+        </div>
+        {% if available_courses %}
+            <div class="mt-4 text-center">
+                <a href="{% url 'course_catalog' %}" class="text-blue-600 hover:text-blue-800">View all courses →</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

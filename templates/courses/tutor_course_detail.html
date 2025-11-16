@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}{{ course.title }}{% endblock %}
+{% block content %}
+<div class="flex justify-between items-center mb-8">
+    <h1 class="text-3xl font-bold">{{ course.title }}</h1>
+    <a href="{% url 'tutor_create_unit' course.id %}" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Add Unit</a>
+</div>
+<div class="space-y-6">
+    {% for unit in units %}
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <h2 class="text-2xl font-bold">Unit {{ unit.order }}: {{ unit.title }}</h2>
+                <p class="text-gray-600 mt-2">{{ unit.description }}</p>
+            </div>
+            <a href="{% url 'tutor_edit_unit' unit.id %}" class="text-blue-600 hover:underline">Edit</a>
+        </div>
+        <div class="grid grid-cols-2 gap-6 mt-4">
+            <div>
+                <h3 class="font-bold mb-2">Videos ({{ unit.videos.count }})</h3>
+                {% for video in unit.videos.all %}
+                <div class="p-3 bg-gray-50 rounded mb-2">{{ video.title }}</div>
+                {% empty %}<p class="text-gray-500 text-sm">No videos</p>{% endfor %}
+                <a href="{% url 'tutor_add_video' unit.id %}" class="text-blue-600 hover:underline text-sm">+ Add Video</a>
+            </div>
+            <div>
+                <h3 class="font-bold mb-2">Materials ({{ unit.materials.count }})</h3>
+                {% for material in unit.materials.all %}
+                <div class="p-3 bg-gray-50 rounded mb-2">{{ material.title }}</div>
+                {% empty %}<p class="text-gray-500 text-sm">No materials</p>{% endfor %}
+                <a href="{% url 'tutor_add_material' unit.id %}" class="text-blue-600 hover:underline text-sm">+ Add Material</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="bg-white rounded-lg shadow-md p-12 text-center">
+        <p class="text-gray-500">No units yet. Add your first unit to get started!</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
